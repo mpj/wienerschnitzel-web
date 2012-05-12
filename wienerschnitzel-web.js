@@ -17,7 +17,7 @@ if (Meteor.is_client) {
     },
 
     'focusout input': function(e) {
-      if(e.target.value.trim().length == 0)
+      if(e.target.value.trim().length === 0)
         e.target.value = $(e.target).attr('data-default');
     },
 
@@ -33,6 +33,7 @@ if (Meteor.is_client) {
           return;
 
         e.target.value = '';
+        e.target.blur();
 
         var slid = getCurrentShoppingListId(true);
 
@@ -75,6 +76,7 @@ if (Meteor.is_client) {
     })
   }
 
+
   Template.shoppingList.listName = function() {
     var list = ShoppingLists.findOne(getCurrentShoppingListId());
     return !!list && !!list.name ? list.name : "Inköpslista";
@@ -89,15 +91,41 @@ if (Meteor.is_client) {
       { shopping_list_id: getCurrentShoppingListId(false) });
   }
 
+  Template.shoppingList.isInputVisible = function() {
+    return Session.get('shoppingListNameLabelFocused');
+  }
+
+  Template.shoppingList.rendered = function() {
+    Meteor.defer(function(){
+      if(Template.shoppingList.isInputVisible)
+        $('#listNameInput').focus();
+    });
+  }
+
   Template.shoppingList.events = {
+    
+    'click h1': function(e) {
+      Session.set('shoppingListNameLabelFocused', true)
+    },
+
+    'focusout input': function(e) {
+      Session.set('shoppingListNameLabelFocused', false)
+    },
+
     'keyup input': function(e) {
+
+      if (e.keyCode == KEY_CODE_ENTER) {
+        e.preventDefault();
+        e.target.blur();  
+      }
+
       var val = e.target.value,
           slid = getCurrentShoppingListId();
 
       clearTimeout(throttleHandle);
       Meteor.setTimeout(function() {
         ShoppingLists.update(slid, { $set: { name: val } })
-      }, 500)
+      }, 250)
     }
   }
 

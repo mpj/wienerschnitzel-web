@@ -22,7 +22,11 @@
 <template name="shoppingList">
   {{#if isVisible}}
   <div id="shopping-list">
-    <input id="listNameInput" type="text" value="{{listName}}" />
+    {{#if isInputVisible}}
+      <input id="listNameInput" type="text" value="{{listName}}" />
+    {{else}}
+      <h1 id="listNameLabel">{{listName}}</h1>
+    {{/if}}
     <ul>
       {{#each ingredients}}
         <li>{{name}} ({{amount}} {{unit}})</li>
@@ -30,6 +34,7 @@
     </ul>
   </div>
   {{/if}}
+  {{rendered}}
 
 </template>
 
