@@ -1,6 +1,9 @@
 <head>
   <title>Codename Wienerschnitzel</title>
+
   <link href='http://fonts.googleapis.com/css?family=Italiana' 
+        rel='stylesheet' type='text/css' />
+  <link href='http://fonts.googleapis.com/css?family=Alex+Brush' 
         rel='stylesheet' type='text/css' />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 </head>
@@ -14,7 +17,7 @@
 <template name="header">
   {{#if isVisible}}
     <div id="header">
-      <img id="logo" src="/img/logo.png" />
+      <img id="logo" src="/img/logo.png" width="150" height="150" />
     <h2>Förvandla receptlänkar till en fin inköpslista.</h2>
   </div>
   {{/if}}
@@ -27,11 +30,13 @@
         <img src="https://chart.googleapis.com/chart?cht=qr&amp;chs=150x150&amp;chl={{QRURL}}" />
       </div>
 
-      {{#if isInputVisible}}
-        <input id="listNameInput" type="text" value="{{listName}}" />
-      {{else}}
-        <h1 id="listNameLabel">{{listName}}</h1>
-      {{/if}}
+      <div class="name">
+        {{#if isInputVisible}}
+          <input id="listNameInput" type="text" value="{{listName}}" />
+        {{else}}
+          <h1 id="listNameLabel">{{listName}}</h1>
+        {{/if}}
+      </div>
       <ul>
         {{#each ingredients}}
           <li><span>{{name}} {{howMuch}}</span></li>

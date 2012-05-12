@@ -1,6 +1,3 @@
-Ingredients = new Meteor.Collection('ingredients');
-ShoppingLists = new Meteor.Collection('shopping_lists');
-
 var KEY_CODE_ENTER      = 13;
 var throttleHandle      = null;
 
@@ -121,9 +118,17 @@ if (Meteor.is_client) {
           slid = getCurrentShoppingListId();
 
       clearTimeout(throttleHandle);
-      Meteor.setTimeout(function() {
-        ShoppingLists.update(slid, { $set: { name: val } })
-      }, 250)
+      throttleHandle = Meteor.setTimeout(function() {
+        // Create a url-friendly name for the playlist,
+        // by stripping all characters that are not a-z, 0-9 or dashes,
+        // and replacing spaces with dashes.
+        var nameSimple = val.toLowerCase().replace(" ", "-").replace(/[^a-z0-9\-]/gi, '');
+        ShoppingLists.update(slid, { $set: { name: val, name_simple: nameSimple } })
+
+
+        Meteor.router.navigate("/"+nameSimple, { trigger: true } );
+
+      }, 500)
     }
   }
 
@@ -202,7 +207,11 @@ function getCurrentShoppingListId(create) {
     Session.set('shopping_list_id', shoppingListId);
     var url = "list/" + shoppingListId;
     Meteor.router.navigate(url, { trigger: true } );
-
+  }
+  if (Session.get('shopping_list_simple_name')) {
+    var shoppingList = ShoppingLists.findOne({ name_simple: Session.get('shopping_list_simple_name')});
+    if (shoppingList)
+      return shoppingList._id;
   }
   return Session.get('shopping_list_id');
 }

@@ -6,7 +6,8 @@ var ClientRouter = Backbone.Router.extend({
     routes: {
       '': 'showRoot',
       '/': 'showRoot',
-      'list/:shopping_list_id': 'showShoppingList'
+      'list/:shopping_list_id': 'showShoppingList',
+      ':nameSimple': 'showShoppingListBySimpleName',
     },
 
     showRoot: function() {
@@ -16,6 +17,9 @@ var ClientRouter = Backbone.Router.extend({
 
     showShoppingList: function( shopping_list_id ) {
       Session.set("shopping_list_id", shopping_list_id); 
+    },
+    showShoppingListBySimpleName: function( nameSimple ) {
+      Session.set("shopping_list_simple_name", nameSimple); 
     }
 
 });
