@@ -2,8 +2,13 @@ Ingredients = new Meteor.Collection('ingredients');
 ShoppingLists = new Meteor.Collection('shopping_lists');
 
 var KEY_CODE_ENTER      = 13;
+var throttleHandle      = null;
 
 if (Meteor.is_client) {
+
+  Template.header.isVisible = function() {
+    return !getCurrentShoppingListId(false);
+  }
 
   Template.addForm.events = {
     'keyup input': function(e) {
@@ -48,10 +53,33 @@ if (Meteor.is_client) {
     }
   }
 
+  Template.shoppingList.listName = function() {
+    var list = ShoppingLists.findOne(getCurrentShoppingListId());
+    return !!list && !!list.name ? list.name : "Inköpslista";
+  }
+
+  Template.shoppingList.isVisible = function() {
+    return !!getCurrentShoppingListId();
+  }
+
   Template.shoppingList.ingredients = function() {
     return Ingredients.find(
       { shopping_list_id: getCurrentShoppingListId(false) });
   }
+
+  Template.shoppingList.events = {
+    'keyup input': function(e) {
+      var val = e.target.value,
+          slid = getCurrentShoppingListId();
+
+      clearTimeout(throttleHandle);
+      Meteor.setTimeout(function() {
+        ShoppingLists.update(slid, { $set: { name: val } })
+      }, 500)
+    }
+  }
+
+
 
 }
 

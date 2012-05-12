@@ -4,11 +4,13 @@
 var ClientRouter = Backbone.Router.extend({
 
     routes: {
-      '':               'getRoot',
+      '': 'showRoot',
+      '/': 'showRoot',
       'list/:shopping_list_id': 'showShoppingList'
     },
 
     showRoot: function() {
+      console.log("showRoot")
       Session.set("shopping_list_id", null);
     },
 

@@ -1,0 +1,2 @@
+meteor deploy www.wienerschnitzel.se
+git push origin master
