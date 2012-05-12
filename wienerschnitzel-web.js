@@ -27,11 +27,14 @@ if (Meteor.is_client) {
         e.preventDefault();
         
         var url = isValidWebUrl(e.target.value) ? e.target.value : null;
-        if (!url)
+        if (!url) {
+          $(e.target).addClass('invalid');
           // Invalid url 
           // TODO: Flash red or something.
           return;
+        }
 
+        $(e.target).removeClass('invalid');
         e.target.value = '';
         e.target.blur();
 
