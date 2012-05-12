@@ -21,18 +21,22 @@
 
 <template name="shoppingList">
   {{#if isVisible}}
-  <div id="shopping-list">
-    {{#if isInputVisible}}
-      <input id="listNameInput" type="text" value="{{listName}}" />
-    {{else}}
-      <h1 id="listNameLabel">{{listName}}</h1>
-    {{/if}}
-    <ul>
-      {{#each ingredients}}
-        <li><span>{{name}} ({{amount}} {{unit}})</span></li>
-      {{/each}}
-    </ul>
-  </div>
+    <div id="shopping-list">
+      <div id="qr">
+        <img src="https://chart.googleapis.com/chart?cht=qr&amp;chs=180x180&amp;chl={{QRURL}}" />
+      </div>
+
+      {{#if isInputVisible}}
+        <input id="listNameInput" type="text" value="{{listName}}" />
+      {{else}}
+        <h1 id="listNameLabel">{{listName}}</h1>
+      {{/if}}
+      <ul>
+        {{#each ingredients}}
+          <li><span>{{name}} ({{amount}} {{unit}})</span></li>
+        {{/each}}
+      </ul>
+    </div>
   {{/if}}
   {{rendered}}
 

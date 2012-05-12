@@ -65,6 +65,9 @@ if (Meteor.is_client) {
     })
   }
 
+  Template.shoppingList.QRURL = function() {
+    return encodeURIComponent(window.location);
+  }
 
   Template.shoppingList.listName = function() {
     var list = ShoppingLists.findOne(getCurrentShoppingListId());
