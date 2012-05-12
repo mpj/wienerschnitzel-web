@@ -17,7 +17,7 @@
 <template name="header">
   {{#if isVisible}}
     <div id="header">
-      <img id="logo" src="/img/logo.png" width="150" height="150" />
+      <img id="logo" src="/img/logo.png" />
     <h2>Förvandla receptlänkar till en fin inköpslista.</h2>
   </div>
   {{/if}}
@@ -27,7 +27,7 @@
   {{#if isVisible}}
     <div id="shopping-list">
       <div id="qr">
-        <img src="https://chart.googleapis.com/chart?cht=qr&amp;chs=150x150&amp;chl={{QRURL}}" />
+        <img src="https://chart.googleapis.com/chart?cht=qr&amp;chs=150x150&amp;chl={{QRURL}}" width="150" height="150" />
       </div>
 
       <div class="name">
