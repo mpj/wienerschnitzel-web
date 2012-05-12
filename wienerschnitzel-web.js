@@ -121,6 +121,32 @@ if (Meteor.is_client) {
 }
 
 if (Meteor.is_server) {
+
+  Meteor.methods({
+
+    getRecipe: function (url, callback) {
+      url = url.replace('www.',''); // FIXME: Thsi should be done by API
+      var escapedRecipeUrl = encodeURIComponent(url),
+          apiUrl = "http://openrecipe-api.herokuapp.com/v1/recipes/" + escapedRecipeUrl;
+
+      var result = Meteor.http.call("GET", apiUrl, {});
+      /*
+      if(error) {
+        // Fail silently, for now.
+        callback(null, {}) // FAKE FAKE
+        return;
+      }*/
+
+      var data = JSON.parse(result.content);
+      var results = [];
+      
+      console.log("data", data)
+      return data;
+
+    }
+
+  });
+
   Meteor.startup(function () {
     // code to run on server at startup
   });
@@ -129,30 +155,41 @@ if (Meteor.is_server) {
 function addRecipeUrl(url) {
   var slid = getCurrentShoppingListId(true);
 
-  // TODO: Get the ingredients from api
-  var ingredients = [
-    { name: 'Mjölk', unit: "dl", amount: 5 },
-    { name: 'Korv', unit: "st", amount: 2 }
-  ];
+  Meteor.call('getRecipe', url, function(err, recipes) {
 
-  _.each(ingredients, function(ingredient) {
-    ingredient.shopping_list_id = slid;
+    // Flatten ingredients
+    var ingredientsAll = [];
+    _.each(recipes, function(recipe) {
+      for (var groupName in recipe.ingredients) {
+        var ingredientsInGroup = recipe.ingredients[groupName];
+        _.each(ingredientsInGroup, function(ingredient) {
+          ingredientsAll.push(ingredient);
+        })
+      }
+    })
 
-    // Does it exist in this shopping list already?
-    var existing = 
-      Ingredients.findOne(
-        { shopping_list_id: slid, 
-          name: ingredient.name, 
-          unit: ingredient.unit });
+    _.each(ingredientsAll, function(ingredient) {
+      ingredient.shopping_list_id = slid;
 
-    if (existing) {
-      Ingredients.update(existing._id, { $inc: { amount: ingredient.amount } } )
-    } else {
-      Ingredients.insert(ingredient);  
-    }
+      // Does it exist in this shopping list already?
+      var existing = 
+        Ingredients.findOne(
+          { shopping_list_id: slid, 
+            name: ingredient.name, 
+            unit: ingredient.unit });
 
-  });
+      if (existing) {
+        Ingredients.update(existing._id, { $inc: { amount: ingredient.amount } } )
+      } else {
+        Ingredients.insert(ingredient);  
+      }
+
+    });
+  })
+  
 }
+
+
 
 function getCurrentShoppingListId(create) {
   
