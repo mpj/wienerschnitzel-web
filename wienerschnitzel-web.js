@@ -94,6 +94,12 @@ if (Meteor.is_client) {
     });
   }
 
+  Template.shoppingList.howMuch = function() {
+    if (this.amount && this.unit)
+      return ["(", this.amount, " ", this.unit, ")"].join("");
+    return "";
+  }
+
   Template.shoppingList.events = {
     
     'click h1': function(e) {
@@ -176,7 +182,8 @@ function addRecipeUrl(url) {
             unit: ingredient.unit });
 
       if (existing) {
-        Ingredients.update(existing._id, { $inc: { amount: ingredient.amount } } )
+        if(existing.amount > 0)
+          Ingredients.update(existing._id, { $inc: { amount: ingredient.amount } } )
       } else {
         Ingredients.insert(ingredient);  
       }
