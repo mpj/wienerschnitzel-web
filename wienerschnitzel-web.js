@@ -25,44 +25,30 @@ if (Meteor.is_client) {
 
       if (e.keyCode == KEY_CODE_ENTER) {
         e.preventDefault();
-        
-        var url = isValidWebUrl(e.target.value) ? e.target.value : null;
-        if (!url) {
-          $(e.target).addClass('invalid');
-          // Invalid url 
-          // TODO: Flash red or something.
-          return;
-        }
 
-        $(e.target).removeClass('invalid');
-        e.target.value = '';
-        e.target.blur();
+        var atLeastOneValidUrl = false;
 
-        var slid = getCurrentShoppingListId(true);
-
-        // TODO: Get the ingredients from api
-        var ingredients = [
-          { name: 'Mjölk', unit: "dl", amount: 5 },
-          { name: 'Korv', unit: "st", amount: 2 }
-        ];
-
-        _.each(ingredients, function(ingredient) {
-          ingredient.shopping_list_id = slid;
-
-          // Does it exist in this shopping list already?
-          var existing = 
-            Ingredients.findOne(
-              { shopping_list_id: slid, 
-                name: ingredient.name, 
-                unit: ingredient.unit });
-
-          if (existing) {
-            Ingredients.update(existing._id, { $inc: { amount: ingredient.amount } } )
-          } else {
-            Ingredients.insert(ingredient);  
+        // If multiple lines is pasted in the textbox, 
+        // the line breaks will be converted to spaces by
+        // the browser.
+        _.each(e.target.value.split(" "), function(str) {
+          var url = isValidWebUrl(str) ? str : null;
+          if (!url) {
+            $(e.target).addClass('invalid');
+            // Invalid url 
+            // TODO: Flash red or something.
+            return;
           }
-
-        });
+          atLeastOneValidUrl = true;
+          addRecipeUrl(url);
+        })
+        
+        
+        if (atLeastOneValidUrl) {
+          $(e.target).removeClass('invalid');
+          e.target.value = '';
+          e.target.blur();
+        }
 
 
       }
@@ -140,6 +126,33 @@ if (Meteor.is_server) {
   });
 }
 
+function addRecipeUrl(url) {
+  var slid = getCurrentShoppingListId(true);
+
+  // TODO: Get the ingredients from api
+  var ingredients = [
+    { name: 'Mjölk', unit: "dl", amount: 5 },
+    { name: 'Korv', unit: "st", amount: 2 }
+  ];
+
+  _.each(ingredients, function(ingredient) {
+    ingredient.shopping_list_id = slid;
+
+    // Does it exist in this shopping list already?
+    var existing = 
+      Ingredients.findOne(
+        { shopping_list_id: slid, 
+          name: ingredient.name, 
+          unit: ingredient.unit });
+
+    if (existing) {
+      Ingredients.update(existing._id, { $inc: { amount: ingredient.amount } } )
+    } else {
+      Ingredients.insert(ingredient);  
+    }
+
+  });
+}
 
 function getCurrentShoppingListId(create) {
   
