@@ -132,20 +132,7 @@ if (Meteor.is_server) {
       var escapedRecipeUrl = encodeURIComponent(url),
           apiUrl = "http://openrecipe-api.herokuapp.com/v1/recipes/" + escapedRecipeUrl;
 
-      var result = Meteor.http.call("GET", apiUrl, {});
-      /*
-      if(error) {
-        // Fail silently, for now.
-        callback(null, {}) // FAKE FAKE
-        return;
-      }*/
-
-      var data = JSON.parse(result.content);
-      var results = [];
-      
-      console.log("data", data)
-      return data;
-
+      return Meteor.http.call("GET", apiUrl, {});
     }
 
   });
@@ -158,11 +145,18 @@ if (Meteor.is_server) {
 function addRecipeUrl(url) {
   var slid = getCurrentShoppingListId(true);
 
-  Meteor.call('getRecipe', url, function(err, recipes) {
+  Meteor.call('getRecipe', url, function(err, result) {
+    
+    if (result.error) {
+      console.warn("API reported error, status code:", result.statusCode)
+      return;
+    }
+
+    var data = JSON.parse(result.content);
 
     // Flatten ingredients
     var ingredientsAll = [];
-    _.each(recipes, function(recipe) {
+    _.each(data, function(recipe) {
       for (var groupName in recipe.ingredients) {
         var ingredientsInGroup = recipe.ingredients[groupName];
         _.each(ingredientsInGroup, function(ingredient) {
