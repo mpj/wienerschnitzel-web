@@ -1,13 +1,40 @@
 <head>
   <title>wienerschnitzel-web</title>
+  <!--<link href='http://fonts.googleapis.com/css?family=Italiana' rel='stylesheet' type='text/css' />-->
 </head>
 
 <body>
-  {{> hello}}
+  {{> header}}
+  {{> addForm }}
+  {{> shoppingList}}
 </body>
 
-<template name="hello">
-  <h1>Hello World!</h1>
-  {{greeting}}
-  <input type="button" value="Click" />
+<template name="shoppingList">
+  <div id="shopping-list">
+    <ul>
+      {{#each ingredients}}
+        <li>{{name}} ({{amount}} {{unit}})</li>
+      {{/each}}
+    </ul>
+  </div>
 </template>
+
+<template name="addForm">
+  <div id="add-form">
+    <input type="text" />
+  </div>
+</template>
+
+<template name="header">
+  <div id="header">
+    <div class="inner">
+      <h3>Codename Wienerschnitzel</h3>
+      <h1 class="quote">"Förvandlar receptlänkar till en fin inköpslista."</h1>
+    </div>
+    <div id="important-info">Det går lika bra med selleri</div>
+    
+  </div>
+</template>
+ 
+
+
