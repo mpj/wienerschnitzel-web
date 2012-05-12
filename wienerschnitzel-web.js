@@ -117,6 +117,10 @@ if (Meteor.is_client) {
       var val = e.target.value,
           slid = getCurrentShoppingListId();
 
+      if (!val || (val && val.length < 3))
+        return; // don't save too short values
+
+
       clearTimeout(throttleHandle);
       throttleHandle = Meteor.setTimeout(function() {
         // Create a url-friendly name for the playlist,
