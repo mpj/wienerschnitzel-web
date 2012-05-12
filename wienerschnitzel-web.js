@@ -11,6 +11,16 @@ if (Meteor.is_client) {
   }
 
   Template.addForm.events = {
+    'focusin input': function(e) {
+      if (e.target.value === $(e.target).attr('data-default'))
+        e.target.value = '';
+    },
+
+    'focusout input': function(e) {
+      if(e.target.value.trim().length == 0)
+        e.target.value = $(e.target).attr('data-default');
+    },
+
     'keyup input': function(e) {
 
       if (e.keyCode == KEY_CODE_ENTER) {
@@ -19,7 +29,10 @@ if (Meteor.is_client) {
         var url = isValidWebUrl(e.target.value) ? e.target.value : null;
         if (!url)
           // Invalid url 
+          // TODO: Flash red or something.
           return;
+
+        e.target.value = '';
 
         var slid = getCurrentShoppingListId(true);
 
@@ -53,6 +66,15 @@ if (Meteor.is_client) {
     }
   }
 
+  Template.addForm.rendered = function() {
+    Meteor.defer(function() {
+      $i = $("#add-form input");
+      if (!$i.val())
+        $i.val($i.attr('data-default'));
+      
+    })
+  }
+
   Template.shoppingList.listName = function() {
     var list = ShoppingLists.findOne(getCurrentShoppingListId());
     return !!list && !!list.name ? list.name : "Inköpslista";
@@ -78,8 +100,6 @@ if (Meteor.is_client) {
       }, 500)
     }
   }
-
-
 
 }
 
